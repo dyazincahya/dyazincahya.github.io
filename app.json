@@ -1,0 +1,16 @@
+{
+  "name": "dyazincahya.github.io",
+  "description": "",
+  "scripts": {
+  },
+  "env": {
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+
+  ]
+}
