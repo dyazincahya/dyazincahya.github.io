@@ -56,8 +56,21 @@
       margin: 1rem 0;
       border-radius: 8px;
       text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
-    .post a {
+    .post img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+    .post-content h3 {
+      margin: 0 0 0.5rem;
+    }
+    .post-content a {
       color: white;
       text-decoration: underline;
       font-weight: bold;
@@ -83,41 +96,44 @@
   </footer>
 
   <script>
-  async function fetchBlogPosts() {
-    const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https://www.kang-cahya.com/feeds/posts/default';
-    try {
-      const response = await fetch(feedUrl);
-      const data = await response.json();
-      const postsContainer = document.getElementById('posts');
-      postsContainer.innerHTML = '';
+    async function fetchBlogPosts() {
+      const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https://www.kang-cahya.com/feeds/posts/default';
+      try {
+        const response = await fetch(feedUrl);
+        const data = await response.json();
+        const postsContainer = document.getElementById('posts');
+        postsContainer.innerHTML = '';
 
-      const entries = data.items || [];
-      if (entries.length === 0) {
-        postsContainer.innerHTML = '<p>No posts found.</p>';
-        return;
+        const entries = data.items || [];
+        if (entries.length === 0) {
+          postsContainer.innerHTML = '<p>No posts found.</p>';
+          return;
+        }
+
+        entries.slice(0, 5).forEach(entry => {
+          const title = entry.title;
+          const link = entry.link;
+          const published = entry.pubDate.split(' ')[0];
+          const thumbnail = entry.thumbnail || 'https://via.placeholder.com/100?text=No+Image';
+
+          const postElement = document.createElement('div');
+          postElement.classList.add('post');
+          postElement.innerHTML = `
+            <img src="${thumbnail}" alt="Thumbnail">
+            <div class="post-content">
+              <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
+              <p>Published on ${published}</p>
+            </div>
+          `;
+          postsContainer.appendChild(postElement);
+        });
+      } catch (error) {
+        console.error('Error fetching feed:', error);
+        document.getElementById('posts').innerHTML = '<p>Error loading posts. Please try again later.</p>';
       }
-
-      entries.slice(0, 5).forEach(entry => {
-        const title = entry.title;
-        const link = entry.link;
-        const published = entry.pubDate.split(' ')[0];
-
-        const postElement = document.createElement('div');
-        postElement.classList.add('post');
-        postElement.innerHTML = `
-          <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
-          <p>Published on ${published}</p>
-        `;
-        postsContainer.appendChild(postElement);
-      });
-    } catch (error) {
-      console.error('Error fetching feed:', error);
-      document.getElementById('posts').innerHTML = '<p>Error loading posts. Please try again later.</p>';
     }
-  }
 
-  fetchBlogPosts();
-</script>
-
+    fetchBlogPosts();
+  </script>
 </body>
 </html>
