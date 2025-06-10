@@ -3,32 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Landing Page</title>
+  <title>Kang Cahya Landing Page</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #4facfe, #00f2fe);
+      background-color: #27AE61;
       color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
       text-align: center;
     }
     h1 {
+      margin-top: 50px;
       font-size: 3rem;
-      margin-bottom: 1rem;
     }
     p {
       font-size: 1.2rem;
       max-width: 600px;
-      margin: 0 auto 2rem;
+      margin: 0 auto 20px;
     }
     a.button {
       background-color: white;
-      color: #4facfe;
+      color: #27AE61;
       padding: 0.8rem 1.5rem;
       text-decoration: none;
       border-radius: 5px;
@@ -36,23 +34,89 @@
       transition: background-color 0.3s, color 0.3s;
     }
     a.button:hover {
-      background-color: #4facfe;
+      background-color: #27AE61;
       color: white;
       border: 1px solid white;
     }
+    section {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      width: 90%;
+      max-width: 800px;
+      border-radius: 10px;
+      margin: 2rem auto;
+    }
+    section h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .post {
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      text-align: left;
+    }
+    .post a {
+      color: white;
+      text-decoration: underline;
+      font-weight: bold;
+    }
     footer {
-      position: absolute;
-      bottom: 20px;
+      margin: 20px 0;
       font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to My Project!</h1>
-  <p>This is a simple landing page hosted on GitHub Pages. Customize it to showcase your portfolio, project, or anything you like.</p>
-  <a href="#get-started" class="button">Get Started</a>
+  <h1>Welcome to My Landing Page</h1>
+  <p>This is a simple landing page hosted on GitHub Pages, featuring my latest blog posts from Kang Cahya.</p>
+  <a href="#blog" class="button">Read My Blog</a>
+
+  <section id="blog">
+    <h2>Latest Blog Posts</h2>
+    <div id="posts">Loading posts...</div>
+  </section>
+
   <footer>
-    &copy; 2025 My Name | <a href="https://github.com/yourusername" style="color: white; text-decoration: underline;">GitHub</a>
+    &copy; 2025 Kang Cahya | <a href="https://github.com/yourusername" style="color: white; text-decoration: underline;">GitHub</a>
   </footer>
+
+  <script>
+    async function fetchBlogPosts() {
+      const feedUrl = 'https://www.kang-cahya.com/feeds/posts/default?alt=json';
+      try {
+        const response = await fetch(feedUrl);
+        const data = await response.json();
+        const postsContainer = document.getElementById('posts');
+        postsContainer.innerHTML = ''; // Clear loading text
+
+        const entries = data.feed.entry || [];
+        if (entries.length === 0) {
+          postsContainer.innerHTML = '<p>No posts found.</p>';
+          return;
+        }
+
+        entries.slice(0, 5).forEach(entry => {
+          const title = entry.title.$t;
+          const link = entry.link.find(l => l.rel === 'alternate').href;
+          const published = entry.published.$t.split('T')[0];
+
+          const postElement = document.createElement('div');
+          postElement.classList.add('post');
+          postElement.innerHTML = `
+            <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
+            <p>Published on ${published}</p>
+          `;
+          postsContainer.appendChild(postElement);
+        });
+      } catch (error) {
+        console.error('Error fetching feed:', error);
+        document.getElementById('posts').innerHTML = '<p>Error loading posts. Please try again later.</p>';
+      }
+    }
+
+    fetchBlogPosts();
+  </script>
 </body>
 </html>
