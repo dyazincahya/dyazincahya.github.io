@@ -83,40 +83,41 @@
   </footer>
 
   <script>
-    async function fetchBlogPosts() {
-      const feedUrl = 'https://www.kang-cahya.com/feeds/posts/default?alt=json';
-      try {
-        const response = await fetch(feedUrl);
-        const data = await response.json();
-        const postsContainer = document.getElementById('posts');
-        postsContainer.innerHTML = ''; // Clear loading text
+  async function fetchBlogPosts() {
+    const feedUrl = 'https://api.rss2json.com/v1/api.json?rss_url=https://www.kang-cahya.com/feeds/posts/default';
+    try {
+      const response = await fetch(feedUrl);
+      const data = await response.json();
+      const postsContainer = document.getElementById('posts');
+      postsContainer.innerHTML = '';
 
-        const entries = data.feed.entry || [];
-        if (entries.length === 0) {
-          postsContainer.innerHTML = '<p>No posts found.</p>';
-          return;
-        }
-
-        entries.slice(0, 5).forEach(entry => {
-          const title = entry.title.$t;
-          const link = entry.link.find(l => l.rel === 'alternate').href;
-          const published = entry.published.$t.split('T')[0];
-
-          const postElement = document.createElement('div');
-          postElement.classList.add('post');
-          postElement.innerHTML = `
-            <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
-            <p>Published on ${published}</p>
-          `;
-          postsContainer.appendChild(postElement);
-        });
-      } catch (error) {
-        console.error('Error fetching feed:', error);
-        document.getElementById('posts').innerHTML = '<p>Error loading posts. Please try again later.</p>';
+      const entries = data.items || [];
+      if (entries.length === 0) {
+        postsContainer.innerHTML = '<p>No posts found.</p>';
+        return;
       }
-    }
 
-    fetchBlogPosts();
-  </script>
+      entries.slice(0, 5).forEach(entry => {
+        const title = entry.title;
+        const link = entry.link;
+        const published = entry.pubDate.split(' ')[0];
+
+        const postElement = document.createElement('div');
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+          <h3><a href="${link}" target="_blank" rel="noopener noreferrer">${title}</a></h3>
+          <p>Published on ${published}</p>
+        `;
+        postsContainer.appendChild(postElement);
+      });
+    } catch (error) {
+      console.error('Error fetching feed:', error);
+      document.getElementById('posts').innerHTML = '<p>Error loading posts. Please try again later.</p>';
+    }
+  }
+
+  fetchBlogPosts();
+</script>
+
 </body>
 </html>
